@@ -42,8 +42,17 @@ def get_completion(prompt_text):
     try:
         completion = client.chat.completions.create(
             model="gpt-4o",
-            messages=[{"role": "user", "content": prompt_text}]
+            messages=[
+                {"role": "system", "content": [{"type": "text", "text": "You are a news editor at a major broadcast news organization, experienced in translating emergency service scanner transcripts into breaking news digital articles. Write a draft news article using the rules supplied."}]},
+                {"role": "user", "content": prompt_text}],
+            response_format={"type": "text"},
+            temperature=0,
+            max_completion_tokens=2048,
+            top_p=1,
+            frequency_penalty=0,
+            presence_penalty=0
         )
+        print(f"Request Successful, token usage: {completion.usage}")
         return completion.choices[0].message.content
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"OpenAI API error: {str(e)}")
